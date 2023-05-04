@@ -7,20 +7,7 @@ import (
 	"net/http"
 )
 
-// 中间件进行身份验证
-func Auth() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		fmt.Println("获取到的token为: ", token)
-		if token != "twgdh" {
-			c.String(403, "身份验证不通过")
-			c.Abort() // 终止当前请求，不会将请求转发给路由，所以 处理函数不会去执行
-			return
-		}
-		c.Next()
-	}
 
-}
 func main() {
 	r := gin.Default()
 
@@ -38,7 +25,20 @@ func IndexHandler(c *gin.Context) {
 func HomeHandler(c *gin.Context) {
 	c.JSON(200, gin.H{"msg": "欢迎来到管理后台页面"})
 }
+// 中间件进行身份验证
+func Auth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.Request.Header.Get("token")
+		fmt.Println("获取到的token为: ", token)
+		if token != "twgdh" {
+			c.String(403, "身份验证不通过")
+			c.Abort() // 终止当前请求，不会将请求转发给路由，所以 处理函数不会去执行
+			return
+		}
+		c.Next()
+	}
 
+}
 func ldapMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取用户名和密码
